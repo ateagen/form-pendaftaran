@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Halaman Admin</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2f3;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+
+    table th {
+      background: #007bff;
+      color: white;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+
+    .hapus-btn {
+      background: #dc3545;
+      color: white;
+    }
+
+    .hapus-btn:hover {
+      background: #c82333;
+    }
+
+    .hapus-semua {
+      background: #6c757d;
+      color: white;
+    }
+
+    .hapus-semua:hover {
+      background: #5a6268;
+    }
+
+    .export-excel {
+      background: #28a745;
+      color: white;
+    }
+
+    .export-excel:hover {
+      background: #218838;
+    }
+
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      table td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      table td, table th {
+        border: none;
+        padding: 10px;
+      }
+
+      table th {
+        display: none;
+      }
+
+      table td {
+        border-bottom: 1px solid #ccc;
+      }
+    }
+  </style>
+  <!-- SheetJS CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>Data Pendaftar</h2>
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Alamat</th>
+          <th>TTL</th>
+          <th>Pendidikan</th>
+          <th>No Telp</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <button class="export-excel" onclick="downloadExcel()">Download Excel</button>
+    <button class="hapus-semua" onclick="hapusSemua()">Hapus Semua</button>
+  </div>
+
+  <script>
+    function tampilkanData() {
+      const data = JSON.parse(localStorage.getItem('pendaftar')) || [];
+      const tbody = document.querySelector('#dataTable tbody');
+      tbody.innerHTML = '';
+
+      data.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td data-label="Nama">${item.nama}</td>
+          <td data-label="Alamat">${item.alamat}</td>
+          <td data-label="TTL">${item.ttl}</td>
+          <td data-label="Pendidikan">${item.pendidikan}</td>
+          <td data-label="Telepon">${item.telp}</td>
+          <td><button class="hapus-btn" onclick="hapusData(${index})">Hapus</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function hapusData(index) {
+      let data = JSON.parse(localStorage.getItem('pendaftar')) || [];
+      data.splice(index, 1);
+      localStorage.setItem('pendaftar', JSON.stringify(data));
+      tampilkanData();
+    }
+
+    function hapusSemua() {
+      if (confirm("Yakin ingin menghapus semua data?")) {
+        localStorage.removeItem('pendaftar');
+        tampilkanData();
+      }
+    }
+
+    function downloadExcel() {
+      const data = JSON.parse(localStorage.getItem('pendaftar')) || [];
+      if (data.length === 0) {
+        alert("Tidak ada data untuk diunduh.");
+        return;
+      }
+
+      const worksheetData = [
+        ["Nama", "Alamat", "TTL", "Pendidikan", "No Telp"],
+        ...data.map(item => [item.nama, item.alamat, item.ttl, item.pendidikan, item.telp])
+      ];
+
+      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Pendaftar");
+
+      XLSX.writeFile(workbook, "data_pendaftar.xlsx");
+    }
+
+    tampilkanData();
+  </script>
+</body>
+</html>

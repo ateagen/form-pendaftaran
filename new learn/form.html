@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Pendaftaran</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      background: white;
+      margin: auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #28a745;
+      color: white;
+      border: none;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #218838;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Form Pendaftaran</h2>
+    <form id="pendaftaranForm">
+      <label>Nama:</label>
+      <input type="text" name="nama" required>
+
+      <label>Alamat:</label>
+      <textarea name="alamat" required></textarea>
+
+      <label>Tempat, Tanggal Lahir:</label>
+      <input type="text" name="ttl" required>
+
+      <label>Pendidikan Terakhir:</label>
+      <input type="text" name="pendidikan" required>
+
+      <label>No. Telepon:</label>
+      <input type="tel" name="telp" required>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('pendaftaranForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const data = {
+        nama: formData.get('nama'),
+        alamat: formData.get('alamat'),
+        ttl: formData.get('ttl'),
+        pendidikan: formData.get('pendidikan'),
+        telp: formData.get('telp')
+      };
+
+      let existingData = JSON.parse(localStorage.getItem('pendaftar')) || [];
+      existingData.push(data);
+      localStorage.setItem('pendaftar', JSON.stringify(existingData));
+
+      alert("Data berhasil disimpan! Lihat di halaman admin.");
+      this.reset();
+    });
+  </script>
+</body>
+</html>
